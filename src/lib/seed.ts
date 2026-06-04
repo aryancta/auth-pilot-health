@@ -1,7 +1,8 @@
 import type { PriorAuthCase, AuditEvent, CaseStage } from "./types";
 
-// Deterministic clock so server render and client hydration agree.
-const BASE = Date.parse("2026-06-04T09:30:00.000Z");
+// Anchor the seeded timeline to load time so the board always looks fresh.
+// These values render only after mount (client), so there is no hydration drift.
+const BASE = Date.now();
 function ago(minutes: number): string {
   return new Date(BASE - minutes * 60_000).toISOString();
 }

@@ -18,9 +18,13 @@ export function formatDateTime(iso: string) {
 export function relativeTime(iso: string) {
   const then = new Date(iso).getTime();
   const now = Date.now();
-  const diff = Math.round((now - then) / 1000);
-  if (diff < 60) return `${diff}s ago`;
-  if (diff < 3600) return `${Math.round(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.round(diff / 3600)}h ago`;
-  return `${Math.round(diff / 86400)}d ago`;
+  const diffMs = now - then;
+  const future = diffMs < 0;
+  const diff = Math.round(Math.abs(diffMs) / 1000);
+  const fmt = (n: number, unit: string) =>
+    future ? `in ${n}${unit}` : `${n}${unit} ago`;
+  if (diff < 60) return future ? "in a moment" : "just now";
+  if (diff < 3600) return fmt(Math.round(diff / 60), "m");
+  if (diff < 86400) return fmt(Math.round(diff / 3600), "h");
+  return fmt(Math.round(diff / 86400), "d");
 }
