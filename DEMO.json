@@ -1,0 +1,43 @@
+{
+  "video_script": [
+    {"goto": "/", "wait_ms": 2500, "caption": "Auth Pilot Health: prior auth that keeps a clinician in charge"},
+    {"click": "a:has-text('Get started')", "wait_ms": 2200, "caption": "Open the live case board"},
+    {"scroll": 250, "wait_ms": 1200, "caption": "Every request is a living Maestro Case"},
+    {"click": "a:has-text('PA-20455')", "wait_ms": 2500, "caption": "A denied brain MRI, auto-advanced to the appeal stage"},
+    {"scroll": 420, "wait_ms": 1600, "caption": "Agents extracted the evidence and matched payer rules"},
+    {"click": "button:has-text('Review and sign')", "wait_ms": 1600, "caption": "Maestro paused for mandatory clinician sign-off"},
+    {"click": "button:has-text('Confirm sign-off')", "wait_ms": 2400, "caption": "Clinician signs, the appeal is sent and logged"},
+    {"scroll": 700, "wait_ms": 1600, "caption": "Full audit trail of every agent and human decision"},
+    {"goto": "/analytics", "wait_ms": 2500, "caption": "Denial patterns across payers and procedures"}
+  ],
+  "screenshot_shots": [
+    {"path": "/", "description": "Hero landing with the human-gate value prop and architecture", "wait_ms": 2500},
+    {"path": "/dashboard", "description": "Case board populated with seeded prior auth cases across all stages", "wait_ms": 2200},
+    {"path": "/cases/PA-20455", "description": "Case detail showing the appeal stage paused at the clinician sign-off human gate", "wait_ms": 2200}
+  ],
+  "submission": {
+    "inspiration": "We kept hearing the same story from clinic staff: prior authorization eats hours, denials pile up, and fewer than 12 percent of denials ever get appealed because nobody has time. Then 2025 laws started banning fully automated medical-necessity denials and CMS announced its WISeR AI prior-auth pilot for January 2026. We wanted to build the provider-side answer: automation that does the paperwork but legally keeps a clinician in charge of every decision.",
+    "what_it_does": "Auth Pilot Health runs every prior authorization as a living case that moves through intake, evidence gathering, rule matching, submission, decision, and appeal. A clinical-evidence agent extracts diagnoses and documentation from the chart, an external payer-rules agent scores the case against the insurer's medical-necessity policy and flags exactly what is missing, and RPA robots submit and poll the portal. When a denial comes back, an agent drafts a citation-backed appeal, but the case pauses at a human task so a clinician must review and sign before anything is sent. Coordinators and utilization-review nurses get faster clean submissions and rescue winnable denials.",
+    "how_we_built_it": "We built the orchestration around UiPath Maestro Case as the case lifecycle and human-task spine, with an Agent Builder agent for evidence extraction, an external CrewAI agent for payer-rules matching under UiPath governance, RPA robots for the portal work, and Claude on the AI Trust Layer for reasoning. The app itself is a Next.js 14 and TypeScript front end with Tailwind and shadcn-style components, a Zustand case store that models the full lifecycle and audit trail, and server route handlers that call Claude live when you add a key or fall back to deterministic synthetic results. Cursor scaffolded and shipped the whole thing through UiPath for Coding Agents.",
+    "challenges": "The hardest part was making the human gate feel native rather than bolted on: the case has to genuinely pause, surface the right approval or sign-off task, and refuse to send anything until a clinician acts, all while staying auditable. We also worked to blend a low-code Agent Builder agent with an external CrewAI agent under one governance layer so the matching step stayed a single, well-scoped responsibility instead of sprawling.",
+    "accomplishments": "We are proud that the human-gate compliance story is the centerpiece, not an afterthought, and that you can walk a case end to end in under a minute: drop a referral, watch the agents extract and flag a missing document, approve at the gate, take a denial, draft an appeal, and sign off, with every step timestamped in the audit trail. The whole thing runs out of the box on synthetic data and degrades gracefully without any API key.",
+    "what_we_learned": "We learned that durable, long-running case orchestration is a different discipline from one-shot LLM calls: state, interruptions, pause and resume, and audit are most of the work. We also learned how much trust comes from making the human decision point explicit and legible rather than hiding the automation behind a single approve button.",
+    "whats_next": "Next we want to: 1) wire the live Maestro Case instance APIs and Orchestrator queues to a real Labs tenant, 2) connect a FHIR adapter so evidence extraction reads real (de-identified) charts, 3) expand the payer-policy library and let the CrewAI agent cite the exact policy version, 4) add peer-to-peer review scheduling for denials that need a physician call, and 5) ship the denial-pattern dashboard into a root-cause workflow that proposes template fixes.",
+    "built_with": [
+      "next.js-14",
+      "typescript",
+      "tailwindcss",
+      "shadcn-ui",
+      "radix-ui",
+      "zustand",
+      "uipath-maestro-case",
+      "uipath-agent-builder",
+      "uipath-orchestrator-rpa",
+      "uipath-for-coding-agents",
+      "crewai",
+      "anthropic-claude",
+      "cursor"
+    ],
+    "category_hint": "Track 1 Maestro Case - dynamic, exception-heavy case management"
+  }
+}
